@@ -44,7 +44,7 @@ const connection = async () => {
   }
 };
 
-app.listen(5000 || process.env.PORT, () => {
+app.listen( process.env.PORT || 5000, () => {
   connection();
   console.log("connected");
 });

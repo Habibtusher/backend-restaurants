@@ -59,4 +59,18 @@ const getFood = async (req, res, next) => {
     next(new AppError(error));
   }
 };
-export { addFood, getFood };
+const deleteFood =async(req,res,next)=>{ 
+ const {id} = req.body
+ console.log(id);
+ try{
+  await foodModel.deleteOne({ _id: id })
+  res.status(200).json({
+    status: "success",
+   message:"Item delete successfully",
+  });
+ } catch (error) {
+    next(new AppError(error));
+  }
+
+}
+export { addFood, getFood,deleteFood };

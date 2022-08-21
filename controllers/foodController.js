@@ -13,20 +13,40 @@ const addFood = async (req, res, next) => {
   } = req.body;
 
   try {
-    const newUser = await foodModel.create({
-      name: name,
-      category: category,
-      image: image,
-      price: price,
-      discountPrice: discountPrice,
-      discountPercent: discountPercent,
-      ratting: ratting,
-    });
-    res.status(201).json({
-      status: "success",
-      message: "Food added successfully.",
-      data: newUser,
-    });
+    if(req.body.id){
+      console.log(req.body.id);
+      const response = await foodModel.findOneAndUpdate({_id: req.body.id},{
+        name: name,
+        category: category,
+        image: image,
+        price: price,
+        discountPrice: discountPrice,
+        discountPercent: discountPercent,
+        ratting: ratting,
+      })
+      res.status(201).json({
+        status: "success",
+        message: "Food Update successfully.",
+      });
+    }
+    else{
+      const newUser = await foodModel.create({
+        name: name,
+        category: category,
+        image: image,
+        price: price,
+        discountPrice: discountPrice,
+        discountPercent: discountPercent,
+        ratting: ratting,
+      });
+      res.status(201).json({
+        status: "success",
+        message: "Food added successfully.",
+        data: newUser,
+      });
+    }
+   
+   
   } catch (error) {
     next(new AppError(error, 400));
   }

@@ -10,6 +10,7 @@ import AuthRoutes from "./routes/authRoutes.js";
 import UserRoutes from "./routes/usersRoutes.js";
 import FoodRoute from "./routes/foodRoute.js";
 import MessageRoute from "./routes/messagesRoutes.js";
+import GenarateOrderRoute from "./routes/genarateOrderRoute.js";
 import { Server, Socket } from "socket.io";
 import { createServer } from "http";
 import cookieParser from "cookie-parser";
@@ -18,7 +19,7 @@ import { v4 as uuidv4 } from "uuid";
 const Strip_secret_key = process.env.STRIPE_SECRET_KEY;
 // const Strip_public_key = process.env.STRIPE_PUBLIC_KEY;
 const stripe = new Stripe("sk_test_51Ljyj5SBDj4qcoMh4fHXGYUqPFSXNtsGlf4wev2Gk2mJwTFlq8i6ZnTxE1C8FeQ10qMAxoBfLCTpfM4SvVmYTw9d003QkuO3Bc");
-console.log("secret key", "sk_test_51Ljyj5SBDj4qcoMh4fHXGYUqPFSXNtsGlf4wev2Gk2mJwTFlq8i6ZnTxE1C8FeQ10qMAxoBfLCTpfM4SvVmYTw9d003QkuO3Bc");
+
 // Middleware
 app.set("view engine", "ejs");
 app.use(cors({ origin: "*" }));
@@ -32,6 +33,7 @@ app.use("/api", UserRoutes);
 app.use("/api/message", MessageRoute);
 app.use("/api/auth", AuthRoutes);
 app.use("/api", FoodRoute);
+app.use("/order", GenarateOrderRoute);
 
 // Error Handler
 app.all("/", (req, res, next) => {

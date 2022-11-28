@@ -5,7 +5,7 @@ const getUsers = async (req, res, next) => {
   let users;
   try {
     if (req.query.email) {
-      console.log("users", req.query.email);
+      // console.log("users", req.query.email);
       users = await Users.find({ email: req.query.email });
     } else if (req.query.firstName) {
       const search = req.query.firstName.toLocaleLowerCase();

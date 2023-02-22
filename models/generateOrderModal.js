@@ -37,6 +37,9 @@ const OrderSchema =  mongoose.Schema({
    },
    status:{
     type: String,
+   },
+   transactionId:{
+    type: String,
    }
 
 }, { timestamps: true });

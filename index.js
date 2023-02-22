@@ -9,16 +9,17 @@ import globalErrorHandler from "./controllers/errorController.js";
 import AuthRoutes from "./routes/authRoutes.js";
 import UserRoutes from "./routes/usersRoutes.js";
 import FoodRoute from "./routes/foodRoute.js";
+import PaymentRoute from "./routes/paymentRoutes.js";
 import MessageRoute from "./routes/messagesRoutes.js";
 import GenarateOrderRoute from "./routes/genarateOrderRoute.js";
 import { Server, Socket } from "socket.io";
 import { createServer } from "http";
-import cookieParser from "cookie-parser";
+import cookieParser from "cookie-parser"
 import bodyParser from "body-parser";
 import { v4 as uuidv4 } from "uuid";
 const Strip_secret_key = process.env.STRIPE_SECRET_KEY;
 // const Strip_public_key = process.env.STRIPE_PUBLIC_KEY;
-const stripe = new Stripe("sk_test_51Ljyj5SBDj4qcoMh4fHXGYUqPFSXNtsGlf4wev2Gk2mJwTFlq8i6ZnTxE1C8FeQ10qMAxoBfLCTpfM4SvVmYTw9d003QkuO3Bc");
+const stripe = new Stripe(Strip_secret_key);
 
 // Middleware
 app.set("view engine", "ejs");
@@ -33,6 +34,7 @@ app.use("/api", UserRoutes);
 app.use("/api/message", MessageRoute);
 app.use("/api/auth", AuthRoutes);
 app.use("/api", FoodRoute);
+app.use("/api", PaymentRoute);
 app.use("/order", GenarateOrderRoute);
 
 // Error Handler
@@ -52,74 +54,26 @@ const connection = async () => {
     console.log(error);
   }
 };
+app.post("/create-payment-intent", async (req, res) => {
+  const booking = req.body;
+  const price = booking.price;
+  const amount = price * 100;
 
+  const paymentIntent = await stripe.paymentIntents.create({
+    currency: "usd",
+    amount: amount,
+    payment_method_types: ["card"],
+  });
+
+  res.send({
+    clientSecret: paymentIntent.client_secret,
+  });
+});
 app.listen(process.env.PORT || 5000, () => {
   connection();
   console.log("connected");
 });
 
-// const httpServer = createServer();
-// const io = new Server(httpServer, {});
-// global.onlineUsers = new Map();
-// io.on("connection", (socket) => {
-//   global.chatSocket = socket;
-//   socket.on("add-user", (userId) => {
-//     onlineUsers.set(userId, socket.id);
-//   });
-// });
-// httpServer.on("send-msg", (data) => {
-//   const sendUserSocket = onlineUsers.get(data.to);
-//   if (sendUserSocket) {
-//     httpServer.to(sendUserSocket).emit("msg-recieve", data.message);
-//   }
-// });
-// httpServer.listen(3000);
 
-app.post("/payment", async (req, res) => {
-  const { product, token } = req.body;
-  const idempontencyKey = uuidv4();
-console.log("object,",);
-  try {
-   stripe.customers
-    .create({
-      email: token.email,
-      source: token.id,
-    })
-    .then((customer) => {
-      stripe.charges.create(
-        {
-          amount: product.price * 100,
-          currency: "usd",
-          customer: customer.id,
-        }
-      );
-    })
-    .then((result) =>{
-      console.log(result);
-       res.status(200).json(result)
-    }
-    )
-    .catch((err) => console.log("err",err));
 
-    // stripe.customers
-    //   .create({
-    //     name: token.card.name,
-    //     email: token.email,
-    //     source: token.id
-    //   })
-    //   .then(customer =>
-    //     stripe.charges.create({
-    //       amount: product.price * 100,
-    //       currency: "usd",
-    //       customer: customer.id
-    //     })
-    //   )
-    //   .then((result) =>{
-    //     console.log("object,result",result);
-    //     res.render("completed.html")
-    //   } )
-    //   .catch(err => console.log("wee",err));
-  } catch (err) {
-    res.send("error",err);
-  }
-});
+

@@ -1,7 +1,7 @@
 import genarateOrderModal from "../models/generateOrderModal.js";
 
 const genarateOrders = async (req, res, next) => {
-  console.log(req.body.items.Carts);
+  console.log(req.body);
   const {
     address,
     email,
@@ -11,7 +11,8 @@ const genarateOrders = async (req, res, next) => {
     totalAmount,
     date,
     paymentStatus,
-    status
+    status,
+    transactionId
   } = req.body;
   const ordersGenarate = await genarateOrderModal.create({
     address: address,
@@ -22,11 +23,12 @@ const genarateOrders = async (req, res, next) => {
     totalAmount: totalAmount,
     date: date,
     paymentStatus: paymentStatus,
-    status:status
+    status:status,
+    transactionId
   });
   res.status(201).json({
     status: "success",
-    message: "Ordergenarate successfully.",
+    message: "Order Genarate successfully!",
   });
  
 };
